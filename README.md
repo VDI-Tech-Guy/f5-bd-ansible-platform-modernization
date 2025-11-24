@@ -71,6 +71,11 @@ Once installed, you can reference the f5-bd-ansible-platform-modernization colle
 
 If you want to see an example of the code in use, before it became a verified collection, watch [this video](https://www.youtube.com/watch?v=V676EF_bq-4).
 
+## Support
+
+As a validated collection, you can get support through Ansible Automation Platform (AAP) using the **Create issue** button on the top right corner.
+If a support case cannot be opened with Red Hat and the collection has been obtained either from Galaxy or GitHub, there may community help available on the [Ansible Forum](https://forum.ansible.com/).
+
 ## License
 
 GNU General Public License v3.0 or later

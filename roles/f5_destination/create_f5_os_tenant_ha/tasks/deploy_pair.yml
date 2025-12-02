@@ -8,11 +8,11 @@
 
 - name: Set full path to backup JSON for source
   ansible.builtin.set_fact:
-    create_f5_os_tenant_ha_inventory_path: >
-      "{{ hostvars[source_host].backup_path
+    create_f5_os_tenant_ha_inventory_path: >-
+      {{ hostvars[create_f5_os_tenant_ha_source_host].backup_path
           + '/inventory_'
           + create_f5_os_tenant_ha_source_host
-          + '.json' }}"
+          + '.json' }}
 
 - name: Load backup inventory JSON
   ansible.builtin.set_fact:

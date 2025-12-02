@@ -14,7 +14,7 @@
 
 - name: Wait for F5 Tenant to Show GUI Page
   ansible.builtin.uri:
-    url: "https://{{ hostvars[source_host].ansible_host }}"
+    url: "https://{{ hostvars[create_f5_os_tenant_ha_seq_source_host].ansible_host }}"
     method: GET
     return_content: true
     status_code: 200

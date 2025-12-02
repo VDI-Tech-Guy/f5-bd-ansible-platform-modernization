@@ -7,10 +7,10 @@
     state: started  # Wait for port to be open (but we want it to fail)
     timeout: 5
     connect_timeout: 2
-  register: port_up_check
+  register: check_f5_availability_port_up_check
   ignore_errors: true
   delegate_to: localhost
-  until: port_up_check.failed
+  until: check_f5_availability_port_up_check.failed
   retries: 60
   delay: 30
 

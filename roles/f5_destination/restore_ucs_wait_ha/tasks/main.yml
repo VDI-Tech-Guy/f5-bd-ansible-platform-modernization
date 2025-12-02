@@ -10,7 +10,7 @@
       f5networks.f5_bigip.bigip_device_info:
         gather_subset:
           - devices
-      register: f5_online_status
+      register: restore_ucs_wait_ha_f5_online_status
       failed_when: false
 
     - name: Restart iControl REST services via SSH (login shell)
@@ -23,21 +23,21 @@
         ansible_user: root
         ansible_python_interpreter: /usr/bin/python3
       when: >
-        f5_online_status is failed
-        or ('No start of json char found' in (f5_online_status.msg | default('')))
+        restore_ucs_wait_ha_f5_online_status is failed
+        or ('No start of json char found' in (restore_ucs_wait_ha_f5_online_status.msg | default('')))
       changed_when: true
 
     - name: Wait 60 seconds after restart
       ansible.builtin.pause:
         seconds: 60
       when: >
-        f5_online_status is failed
-        or ('No start of json char found' in (f5_online_status.msg | default('')))
+        restore_ucs_wait_ha_f5_online_status is failed
+        or ('No start of json char found' in (restore_ucs_wait_ha_f5_online_status.msg | default('')))
 
     - name: Check failover-status on F5 device
       f5networks.f5_bigip.bigip_command:
         commands: show cm failover-status
-      register: f5_status_result
+      register: restore_ucs_wait_ha_f5_status_result
       failed_when: false
       delegate_to: "{{ inventory_hostname }}"
       vars:
@@ -46,11 +46,11 @@
       loop_control:
         label: "Try #{{ item + 1 }}"
       until:
-        - f5_status_result.stdout is defined
-        - f5_status_result.stdout | length > 0
+        - restore_ucs_wait_ha_f5_status_result.stdout is defined
+        - restore_ucs_wait_ha_f5_status_result.stdout | length > 0
         - >
-          ('ACTIVE' in f5_status_result.stdout[0] or 'STANDBY' in f5_status_result.stdout[0])
+          ('ACTIVE' in restore_ucs_wait_ha_f5_status_result.stdout[0] or 'STANDBY' in restore_ucs_wait_ha_f5_status_result.stdout[0])
         - >
-          ('gray' in f5_status_result.stdout[0] or 'green' in f5_status_result.stdout[0])
+          ('gray' in restore_ucs_wait_ha_f5_status_result.stdout[0] or 'green' in restore_ucs_wait_ha_f5_status_result.stdout[0])
       delay: "{{ retry_delay }}"
       retries: 1

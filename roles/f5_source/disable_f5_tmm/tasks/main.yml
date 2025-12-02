@@ -5,5 +5,5 @@
     commands: >
       run /util bash -c "bigstart stop"
     provider: "{{ provider }}"
-  register: stop_task
+  register: disable_f5_tmm_stop_task
   ignore_errors: true

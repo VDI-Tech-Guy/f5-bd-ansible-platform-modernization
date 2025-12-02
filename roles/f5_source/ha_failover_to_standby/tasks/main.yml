@@ -2,13 +2,13 @@
 
 - name: Store Variable for Hostname from Group
   ansible.builtin.set_fact:
-    temp_hostname: "{{ hostvars[item].inventory_hostname }}"
+    ha_failover_to_standby_temp_hostname: "{{ hostvars[item].inventory_hostname }}"
   loop: "{{ groups['ha_pair_source'] }}"
   when: hostvars[item].ansible_host == ansible_host
 
 - name: Load backup inventory JSON
   ansible.builtin.set_fact:
-    temp_inventory: "{{ lookup('file', backup_path + '/inventory_' + temp_hostname + '.json') | from_json }}"
+    ha_failover_to_standby_temp_inventory: "{{ lookup('file', backup_path + '/inventory_' + ha_failover_to_standby_temp_hostname + '.json') | from_json }}"
   delegate_to: localhost
 
 - name: Collect BIG-IP information
@@ -17,22 +17,22 @@
       - traffic-groups
     provider: "{{ provider }}"
   delegate_to: localhost
-  register: traffic_group
+  register: ha_failover_to_standby_traffic_group
 
 - name: Debug
   ansible.builtin.debug:
-    var: temp_inventory
+    var: ha_failover_to_standby_temp_inventory
 
 - name: Debug
   ansible.builtin.debug:
-    var: traffic_group
+    var: ha_failover_to_standby_traffic_group
 
 - name: Trigger HA Failover
   f5networks.f5_modules.bigip_command:
     commands:
       - "run /sys failover standby"
     provider: "{{ provider }}"
-  loop: "{{ traffic_group.traffic_groups }}"
+  loop: "{{ ha_failover_to_standby_traffic_group.traffic_groups }}"
   when:
     - item.is_floating is defined
     - item.is_floating | lower == 'yes'
@@ -43,12 +43,12 @@
       - devices
     provider: "{{ provider }}"
   delegate_to: localhost
-  register: current_failover_state
+  register: ha_failover_to_standby_current_failover_state
 
 - name: Debug
   ansible.builtin.debug:
     var: item.failover_state
-  loop: "{{ current_failover_state.devices }}"
+  loop: "{{ ha_failover_to_standby_current_failover_state.devices }}"
   when:
     - item.name is defined
     - inventory_hostname in item.name

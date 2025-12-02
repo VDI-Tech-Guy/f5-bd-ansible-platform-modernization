@@ -13,8 +13,8 @@
     headers:
       Content-Type: "application/json"
     status_code: 200
-  register: result
-  until: result is success
+  register: set_admin_password_shell_result
+  until: set_admin_password_shell_result is success
   retries: 10
   delay: 10
   delegate_to: localhost
@@ -26,8 +26,8 @@
     shell: bash
     state: present
     provider: "{{ provider }}"
-  register: f5_shell
-  until: f5_shell.changed
+  register: set_admin_password_shell_f5_shell
+  until: set_admin_password_shell_f5_shell.changed
   retries: 10
   delay: 10
   delegate_to: localhost

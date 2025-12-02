@@ -7,15 +7,15 @@
     provider: "{{ provider }}"
   vars:
     ansible_python_interpreter: /usr/bin/python3
-  register: master_key_output
+  register: backup_crypto_keys_master_key_output
 
-- name: Debug Master Key master_key_output
+- name: Debug Master Key backup_crypto_keys_master_key_output
   ansible.builtin.debug:
-    var: master_key_output
+    var: backup_crypto_keys_master_key_output
 
-- name: Debug Master Key master_key_output.stdout
+- name: Debug Master Key backup_crypto_keys_master_key_output.stdout
   ansible.builtin.debug:
-    var: master_key_output.stdout
+    var: backup_crypto_keys_master_key_output.stdout
 
 - name: Set Crypto Key
   f5networks.f5_modules.bigip_command:
@@ -38,7 +38,7 @@
 
 - name: "Copy Inventory to file for {{ inventory_hostname }}"
   ansible.builtin.copy:
-    content: "{{ master_key_output | to_nice_json }}"
+    content: "{{ backup_crypto_keys_master_key_output | to_nice_json }}"
     dest: "{{ backup_path }}/master_key_{{ inventory_hostname }}.json"
     mode: '0755'
   delegate_to: localhost

@@ -4,7 +4,7 @@
   ansible.builtin.find:
     paths: "{{ backup_path }}"
     patterns: "*.ucs"
-  register: ucs_fetch
+  register: copy_ucs_file_ucs_fetch
   delegate_to: localhost
 
 - name: Upload UCS
@@ -12,7 +12,7 @@
     ucs: "{{ item.path }}"
     state: present
   register: restore_task_upload
-  loop: "{{ ucs_fetch.files }}"
+  loop: "{{ copy_ucs_file_ucs_fetch.files }}"
   when:
     - item.path is defined
     - inventory_hostname in item.path

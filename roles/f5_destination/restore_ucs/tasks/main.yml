@@ -4,7 +4,7 @@
   ansible.builtin.find:
     paths: "{{ backup_path }}"
     patterns: "*.ucs"
-  register: ucs_fetch
+  register: restore_ucs_ucs_fetch
   delegate_to: localhost
 
 - name: Pause for 30 seconds
@@ -13,9 +13,9 @@
 
 - name: Run Restore Command with Platform-Migrate
   ansible.builtin.command: "tmsh load /sys ucs {{ item.path | basename }} no-license platform-migrate"
-  register: restore_task
-  changed_when: restore_task.rc != 0
-  loop: "{{ ucs_fetch.files }}"
+  register: restore_ucs_restore_task
+  changed_when: restore_ucs_restore_task.rc != 0
+  loop: "{{ restore_ucs_ucs_fetch.files }}"
   when:
     - item.path is defined
     - inventory_hostname in item.path
@@ -24,4 +24,4 @@
 
 - name: Debug Output of Restore
   ansible.builtin.debug:
-    var: restore_task
+    var: restore_ucs_restore_task

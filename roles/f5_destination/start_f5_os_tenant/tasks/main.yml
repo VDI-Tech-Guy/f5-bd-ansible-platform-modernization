@@ -13,8 +13,8 @@
     return_content: true
     status_code: 200
     validate_certs: false
-  register: atc_do_status
-  until: atc_do_status is success
+  register: start_f5_os_tenant_atc_do_status
+  until: start_f5_os_tenant_atc_do_status is success
   retries: 30
   delay: 30
   delegate_to: localhost

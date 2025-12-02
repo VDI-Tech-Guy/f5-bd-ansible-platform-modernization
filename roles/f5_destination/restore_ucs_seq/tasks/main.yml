@@ -13,7 +13,7 @@
 
 - name: Store Variable for Hostname from Group
   ansible.builtin.set_fact:
-    restore_ucs_seq__temp_hostname: "{{ hostvars[item].inventory_hostname }}"
+    restore_ucs_seq_temp_hostname: "{{ hostvars[item].inventory_hostname }}"
   loop: "{{ groups['ha_pair_source'] }}"
   when: hostvars[item].ansible_host == ansible_host
 

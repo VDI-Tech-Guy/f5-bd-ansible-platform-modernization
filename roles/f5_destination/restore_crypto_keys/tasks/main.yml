@@ -16,7 +16,10 @@
       run /util bash -c "f5mku -K"
     provider: "{{ provider }}"
   register: restore_crypto_keys_f5_old_key
-  until: restore_crypto_keys_f5_old_key is defined and 'stdout' in restore_crypto_keys_f5_old_key and restore_crypto_keys_f5_old_key.stdout[0] | trim | length > 0
+  until: >
+    restore_crypto_keys_f5_old_key is defined and
+    restore_crypto_keys_f5_old_key.stdout is defined and
+    restore_crypto_keys_f5_old_key.stdout[0] | trim | length > 0
   retries: 10
   delay: 10
 
@@ -30,7 +33,10 @@
       run /util bash -c "f5mku -r {{ restore_crypto_keys_master_key_output.stdout[0] }}"
     provider: "{{ provider }}"
   register: restore_crypto_keys_f5_re_key
-  until: restore_crypto_keys_f5_re_key is defined and 'stdout' in restore_crypto_keys_f5_re_key and "'Rekeying' in restore_crypto_keys_f5_re_key.stdout[0]"
+  until: >
+    restore_crypto_keys_f5_re_key is defined and
+    'stdout' in restore_crypto_keys_f5_re_key and
+    'Rekeying' in restore_crypto_keys_f5_re_key.stdout[0]
   retries: 10
   delay: 10
 
@@ -46,7 +52,10 @@
       sleep 1;'"
     provider: "{{ provider }}"
   register: restore_crypto_keys_f5_set_key
-  until: restore_crypto_keys_f5_set_key is defined and 'stdout' in restore_crypto_keys_f5_set_key and 'spawn' in restore_crypto_keys_f5_set_key.stdout[0]
+  until: >
+    restore_crypto_keys_f5_set_key is defined and
+    'stdout' in restore_crypto_keys_f5_set_key and
+    'spawn' in restore_crypto_keys_f5_set_key.stdout[0]
   retries: 10
   delay: 10
 
@@ -65,7 +74,10 @@
       run /util bash -c "f5mku -K"
     provider: "{{ provider }}"
   register: restore_crypto_keys_cur_key
-  until: restore_crypto_keys_cur_key is defined and 'stdout' in restore_crypto_keys_cur_key and restore_crypto_keys_cur_key.stdout[0] | trim | length > 0
+  until: >
+    restore_crypto_keys_cur_key is defined and
+    'stdout' in restore_crypto_keys_cur_key and
+    restore_crypto_keys_cur_key.stdout[0] | trim | length > 0
   retries: 10
   delay: 10
 

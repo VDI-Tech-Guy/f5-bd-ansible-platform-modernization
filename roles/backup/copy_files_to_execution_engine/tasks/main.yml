@@ -19,7 +19,12 @@
 
 - name: Debug files found
   ansible.builtin.debug:
-    msg: "Found files: {{ copy_files_to_execution_engine_file_fetch.files + copy_files_to_execution_engine_file_2_fetch.files + copy_files_to_execution_engine_file_3_fetch.files }}"
+    msg: >
+      "Found files: {{
+      copy_files_to_execution_engine_file_fetch.files +
+      copy_files_to_execution_engine_file_2_fetch.files +
+      copy_files_to_execution_engine_file_3_fetch.files
+      }}"
 
 - name: Create Backup File Directory (Execution Engine)
   ansible.builtin.file:
@@ -33,5 +38,10 @@
     src: "{{ item.path }}"
     dest: "{{ backup_path }}/"
     flat: true  # Prevent directory structure creation
-  with_items: "{{ copy_files_to_execution_engine_file_fetch.files + copy_files_to_execution_engine_file_2_fetch.files + copy_files_to_execution_engine_file_3_fetch.files }}"
+  with_items: > 
+    "{{
+    copy_files_to_execution_engine_file_fetch.files +
+    copy_files_to_execution_engine_file_2_fetch.files +
+    copy_files_to_execution_engine_file_3_fetch.files
+    }}"
   delegate_to: backup-host  # Fetching from remote to local system

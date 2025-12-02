@@ -1,0 +1,16 @@
+---
+galaxy_info:
+  author: F5 DevCentral
+  description: Role for F5 BIG-IP platform modernization
+  company: F5 Networks
+  license: GPL-3.0-or-later
+  min_ansible_version: "2.15"
+  platforms:
+    - name: GenericLinux
+      versions:
+        - all
+  galaxy_tags:
+    - f5
+    - bigip
+    - networking
+dependencies: []

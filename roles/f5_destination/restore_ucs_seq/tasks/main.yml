@@ -4,7 +4,7 @@
   ansible.builtin.find:
     paths: "{{ backup_path }}"
     patterns: "*.ucs"
-  register: restore_ucs_seq__ucs_fetch
+  register: restore_ucs_seq_ucs_fetch
   delegate_to: localhost
 
 - name: Pause for 30 seconds

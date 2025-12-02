@@ -38,8 +38,7 @@
     src: "{{ item.path }}"
     dest: "{{ backup_path }}/"
     flat: true  # Prevent directory structure creation
-  with_items: > 
-    "{{
+  with_items: "{{
     copy_files_to_execution_engine_file_fetch.files +
     copy_files_to_execution_engine_file_2_fetch.files +
     copy_files_to_execution_engine_file_3_fetch.files

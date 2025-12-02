@@ -9,10 +9,10 @@
 - name: Set full path to backup JSON for source
   ansible.builtin.set_fact:
     create_f5_os_tenant_ha_seq_inventory_path: >
-      "{{ hostvars[create_f5_os_tenant_ha_seq_source_host].backup_path
+      {{ hostvars[create_f5_os_tenant_ha_seq_source_host].backup_path
           + '/inventory_'
           + create_f5_os_tenant_ha_seq_source_host
-          + '.json' }}"
+          + '.json' }}
 
 - name: Load backup inventory JSON
   ansible.builtin.set_fact:
@@ -59,7 +59,7 @@
 
 - name: Find matching device for create_f5_os_tenant_ha_seq_source_host
   ansible.builtin.set_fact:
-    create_f5_os_tenant_ha_seq_matched_device: >-
+    create_f5_os_tenant_ha_seq_matched_device: >
       {{ create_f5_os_tenant_ha_seq_inventory.devices
          | selectattr('management_address', '==', hostvars[create_f5_os_tenant_ha_seq_source_host].ansible_host)
          | list

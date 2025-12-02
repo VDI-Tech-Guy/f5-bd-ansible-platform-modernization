@@ -9,7 +9,7 @@
 - name: Set full path to backup JSON for source
   ansible.builtin.set_fact:
     create_f5_os_tenant_ha_inventory_path: >
-      "{{ hostvars[create_f5_os_tenant_ha_source_host].backup_path
+      "{{ hostvars[source_host].backup_path
           + '/inventory_'
           + create_f5_os_tenant_ha_source_host
           + '.json' }}"
@@ -48,8 +48,8 @@
     create_f5_os_tenant_ha_image: "{{ item }}"
   loop: "{{ create_f5_os_tenant_ha_tenant_info.tenant_images }}"
   when:
-    - hostvars[create_f5_os_tenant_ha_source_host].build_number is defined
-    - hostvars[create_f5_os_tenant_ha_source_host].build_number in item.name
+    - hostvars[source_host].build_number is defined
+    - hostvars[source_host].build_number in item.name
 
 - name: Collect interface and vlan information on F5OS device
   f5networks.f5os.f5os_device_info:
@@ -57,14 +57,14 @@
       - tenants-info
   register: create_f5_os_tenant_ha_tenant_info
 
-- name: Find matching device for create_f5_os_tenant_ha_source_host
+- name: Find matching device for source_host
   ansible.builtin.set_fact:
     create_f5_os_tenant_ha_matched_device: >-
       {{ create_f5_os_tenant_ha_inventory.devices
-         | selectattr('management_address', '==', hostvars[create_f5_os_tenant_ha_source_host].ansible_host)
+         | selectattr('management_address', '==', hostvars[source_host].ansible_host)
          | list
          | first }}
-  when: hostvars[create_f5_os_tenant_ha_source_host].ansible_host is defined
+  when: hostvars[source_host].ansible_host is defined
 
 - name: DEBUG - matched device
   ansible.builtin.debug:
@@ -75,7 +75,7 @@
     name: "{{ create_f5_os_tenant_ha_matched_device.hostname.split('.')[0] | lower }}"
     image_name: "{{ create_f5_os_tenant_ha_image.name }}"
     nodes: "{{ tenant_nodes }}"
-    mgmt_ip: "{{ hostvars[create_f5_os_tenant_ha_source_host].ansible_host }}"
+    mgmt_ip: "{{ hostvars[source_host].ansible_host }}"
     mgmt_prefix: "{{ mgmt_sn_cidr }}"
     mgmt_gateway: "{{ mgmt_gw }}"
     vlans: "{{ create_f5_os_tenant_ha_vlan_list }}"

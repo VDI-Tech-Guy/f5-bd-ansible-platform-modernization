@@ -1,35 +1,8 @@
 ---
-- name: "[00] Copy Source BIG-IP Crypto-UCS Files to EE"
-  hosts: backup-host
-  gather_facts: false
-  roles:
-    - copy_files_to_execution_engine
 
-- name: "[01] Find Active Unit and Create Dynamic Group"
-  hosts: localhost
-  connection: local
-  gather_facts: false
-  roles:
-    - create_dyn_groups
-
-- name: "[09] Wait for UCS Restore to Complete"
-  hosts: ha_pair_source_dynamic
+- name: "[07] Wait for UCS Restore to Complete"
+  hosts: ha_pair_source
   connection: httpapi
   gather_facts: false
-  tasks:
-
-    # - name: Continue Waiting for F5 Services
-    #   ansible.builtin.include_role:
-    #     name: "pause_5_minutes"
-    #   when: failover_state | lower == 'active'
-
-    - name: Continue Waiting for F5 Services
-      ansible.builtin.include_role:
-        name: "restore_ucs_wait_ha"
-      when: failover_state | lower == 'active'
-
-    # - name: Run Sync on datasync-global-dg force active to both units.
-    #   f5networks.f5_bigip.bigip_command:
-    #     commands: run cm config-sync force-full-load-push to-group datasync-global-dg
-    #   when: failover_state | lower == 'active'
-    # This is Test Code Dont use
+  roles:
+    - sync_state

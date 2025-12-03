@@ -13,6 +13,9 @@
   ansible.builtin.set_fact:
     sync_state_failover_state: "{{ item.failover_state }}"
   loop: "{{ sync_state_current_state.ansible_facts.ansible_net_devices }}"
+  when:
+    - item.management_address is defined
+    - ansible_host in item.management_address
 
 - name: Run Sync on datasync-global-dg force active to both units.
   f5networks.f5_bigip.bigip_command:

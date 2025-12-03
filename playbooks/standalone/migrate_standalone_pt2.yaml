@@ -1,9 +1,10 @@
 ---
 
-- name: "[07] Copy Source BIG-IP Crypto-UCS Files to Bastion"
+- name: "[07] Copy Source BIG-IP Crypto-UCS Files to EE"
   hosts: backup-host
+  gather_facts: false
   roles:
-    - copy_files_to_backup_host
+    - copy_files_to_execution_engine
 
 - name: "[08] Build and Start Destination F5"
   hosts: f5_destination_partition

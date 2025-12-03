@@ -23,7 +23,7 @@
 
 - name: Create VLANs List
   ansible.builtin.set_fact:
-    create_f5_os_tenant_vlan_list: "{{ create_f5_os_tenant_vlan_list + [item.tag] }}"
+    create_f5_os_tenant_vlan_list: "{{ (create_f5_os_tenant_vlan_list | default([])) + [item.tag] }}"
   with_items: "{{ create_f5_os_tenant_inventory.vlans }}"
   when: '"yes" in item.interfaces[0].tagged'
 

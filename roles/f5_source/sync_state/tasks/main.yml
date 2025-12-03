@@ -1,0 +1,20 @@
+---
+
+- name: COLLECT BIG-IP FACTS
+  f5networks.f5_modules.bigip_device_info:
+    gather_subset:
+      - system-info
+      - devices
+      - sync-status
+    provider: "{{ provider }}"
+  register: sync_state_current_state
+
+- name: Set Variables Failover State
+  ansible.builtin.set_fact:
+    sync_state_failover_state: "{{ item.failover_state }}"
+  loop: "{{ sync_state_current_state.ansible_facts.ansible_net_devices }}"
+
+- name: Run Sync on datasync-global-dg force active to both units.
+  f5networks.f5_bigip.bigip_command:
+    commands: run cm config-sync force-full-load-push to-group datasync-global-dg
+  when: sync_state_failover_state | lower == 'active'

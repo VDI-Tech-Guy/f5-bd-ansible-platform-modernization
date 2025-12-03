@@ -1,0 +1,34 @@
+---
+
+- name: "[01] Bastion Backup-Cleanup"
+  hosts: backup-host
+  roles:
+    - clean_up
+    - create_backup_path
+
+- name: "[02] Backup Source BIG-IP Crypto Files"
+  hosts: f5_source
+  connection: local
+  gather_facts: false
+  roles:
+    - backup_crypto_keys
+    - backup_info_variables
+
+- name: "[03] Backup Source BIG-IP UCS File"
+  hosts: f5_source
+  connection: httpapi
+  gather_facts: false
+  roles:
+    - backup_ucs_file
+
+- name: "[04] Copy Source BIG-IP Crypto-UCS Files to Bastion"
+  hosts: backup-host
+  roles:
+    - copy_files_to_backup_host
+
+- name: "[05] Disable Source F5 (BIGSTART STOP)"
+  hosts: f5_source
+  connection: local
+  gather_facts: false
+  roles:
+    - disable_f5_tmm

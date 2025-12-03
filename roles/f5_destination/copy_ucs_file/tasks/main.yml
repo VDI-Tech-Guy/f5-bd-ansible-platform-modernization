@@ -15,4 +15,3 @@
   loop: "{{ copy_ucs_file_ucs_fetch.files }}"
   when:
     - item.path is defined
-    - inventory_hostname in item.path

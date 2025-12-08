@@ -2,28 +2,28 @@
 
 - name: Get timestamp from the system
   ansible.builtin.command: "date +%Y-%m-%d%H-%M-%S"
-  register: tstamp
-  changed_when: tstamp.rc != 0
+  register: backup_ucs_file_tstamp
+  changed_when: backup_ucs_file_tstamp.rc != 0
   delegate_to: localhost
 
 - name: Set variables
   ansible.builtin.set_fact:
-    cur_date: "{{ tstamp.stdout[0:10] }}"
-    cur_time: "{{ tstamp.stdout[10:] }}"
+    backup_ucs_file_cur_date: "{{ backup_ucs_file_tstamp.stdout[0:10] }}"
+    backup_ucs_file_cur_time: "{{ backup_ucs_file_tstamp.stdout[10:] }}"
 
 - name: Create a new UCS
   f5networks.f5_bigip.bigip_ucs_fetch:
-    src: "{{ inventory_hostname }}-{{ cur_date }}-{{ cur_time }}.ucs"
-    dest: "{{ inventory_hostname }}-{{ cur_date }}-{{ cur_time }}.ucs"
-  register: task
+    src: "{{ inventory_hostname }}-{{ backup_ucs_file_cur_date }}-{{ backup_ucs_file_cur_time }}.ucs"
+    dest: "{{ inventory_hostname }}-{{ backup_ucs_file_cur_date }}-{{ backup_ucs_file_cur_time }}.ucs"
+  register: backup_ucs_file_task
 
 - name: Debug task
   ansible.builtin.debug:
-    var: task
+    var: backup_ucs_file_task
 
 - name: Wait for Backup Task to complete
   ansible.builtin.uri:
-    url: "https://{{ ansible_host }}/mgmt/tm/task/sys/ucs/{{ task.task_id }}"
+    url: "https://{{ ansible_host }}/mgmt/tm/task/sys/ucs/{{ backup_ucs_file_task.task_id }}"
     method: GET
     return_content: true
     status_code: 200
@@ -31,20 +31,20 @@
     user: "{{ ansible_user }}"
     password: "{{ ansible_password }}"
     validate_certs: false
-  register: atc_backup_status
-  until: atc_backup_status is success
+  register: backup_ucs_file_atc_backup_status
+  until: backup_ucs_file_atc_backup_status is success
   retries: 30
   delay: 30
   delegate_to: localhost
 
 - name: Download an existing UCS
   f5networks.f5_bigip.bigip_ucs_fetch:
-    src: "{{ inventory_hostname }}-{{ cur_date }}-{{ cur_time }}.ucs"
-    dest: "{{ backup_path }}/{{ inventory_hostname }}-{{ cur_date }}-{{ cur_time }}.ucs"
+    src: "{{ inventory_hostname }}-{{ backup_ucs_file_cur_date }}-{{ backup_ucs_file_cur_time }}.ucs"
+    dest: "{{ backup_path }}/{{ inventory_hostname }}-{{ backup_ucs_file_cur_date }}-{{ backup_ucs_file_cur_time }}.ucs"
     timeout: 600
-  register: ucs_backup_status
+  register: backup_ucs_file_ucs_backup_status
   failed_when: false
-  until: ucs_backup_status is success
+  until: backup_ucs_file_ucs_backup_status is success
   retries: 3
   delay: 5
 
@@ -52,11 +52,11 @@
   ansible.builtin.find:
     paths: "{{ backup_path }}"
     patterns: "*.ucs"
-  register: file_3_fetch
+  register: backup_ucs_file_file_3_fetch
   delegate_to: localhost
 
 - name: Debug3
   ansible.builtin.debug:
     var: "{{ item.path }}"
-  loop: "{{ file_3_fetch.files }}"
+  loop: "{{ backup_ucs_file_file_3_fetch.files }}"
   when: inventory_hostname in item.path

@@ -7,7 +7,7 @@
       - devices
       - sync-status
     provider: "{{ provider }}"
-  register: inventory
+  register: update_dyn_groups_inventory
 
 - name: Debug - Before
   ansible.builtin.debug:
@@ -18,7 +18,7 @@
     hostname: "{{ item.hostname }}"
     failover_state: "{{ item.failover_state }}"
     groups: ha_pair_source_dynamic
-  loop: "{{ inventory.ansible_facts.ansible_net_devices }}"
+  loop: "{{ update_dyn_groups_inventory.ansible_facts.ansible_net_devices }}"
 
 - name: Debug - After
   ansible.builtin.debug:

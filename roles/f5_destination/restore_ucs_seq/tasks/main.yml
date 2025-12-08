@@ -4,7 +4,7 @@
   ansible.builtin.find:
     paths: "{{ backup_path }}"
     patterns: "*.ucs"
-  register: ucs_fetch
+  register: restore_ucs_seq_ucs_fetch
   delegate_to: localhost
 
 - name: Pause for 30 seconds
@@ -13,21 +13,21 @@
 
 - name: Store Variable for Hostname from Group
   ansible.builtin.set_fact:
-    temp_hostname: "{{ hostvars[item].inventory_hostname }}"
+    restore_ucs_seq_temp_hostname: "{{ hostvars[item].inventory_hostname }}"
   loop: "{{ groups['ha_pair_source'] }}"
   when: hostvars[item].ansible_host == ansible_host
 
 - name: Run Restore Command with Platform-Migrate
   ansible.builtin.command: "tmsh load /sys ucs {{ item.path | basename }} no-license platform-migrate"
-  register: restore_task
-  changed_when: restore_task.rc != 0
-  loop: "{{ ucs_fetch.files }}"
+  register: restore_ucs_seq_restore_task
+  changed_when: restore_ucs_seq_restore_task.rc != 0
+  loop: "{{ restore_ucs_seq_ucs_fetch.files }}"
   when:
     - item.path is defined
-    - temp_hostname in item.path
+    - restore_ucs_seq_temp_hostname in item.path
   vars:
     ansible_python_interpreter: /usr/bin/python3
 
 - name: Debug Output of Restore
   ansible.builtin.debug:
-    var: restore_task
+    var: restore_ucs_seq_restore_task

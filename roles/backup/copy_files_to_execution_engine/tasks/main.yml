@@ -3,23 +3,28 @@
   ansible.builtin.find:
     paths: "{{ backup_path }}"
     patterns: "master_key_*.json"
-  register: file_fetch
+  register: copy_files_to_execution_engine_file_fetch
 
 - name: Find inventory_*.json files to fetch
   ansible.builtin.find:
     paths: "{{ backup_path }}"
     patterns: "inventory_*.json"
-  register: file_2_fetch
+  register: copy_files_to_execution_engine_file_2_fetch
 
 - name: Find *.ucs files to fetch
   ansible.builtin.find:
     paths: "{{ backup_path }}"
     patterns: "*.ucs"
-  register: file_3_fetch
+  register: copy_files_to_execution_engine_file_3_fetch
 
 - name: Debug files found
   ansible.builtin.debug:
-    msg: "Found files: {{ file_fetch.files + file_2_fetch.files + file_3_fetch.files }}"
+    msg: >
+      "Found files: {{
+      copy_files_to_execution_engine_file_fetch.files +
+      copy_files_to_execution_engine_file_2_fetch.files +
+      copy_files_to_execution_engine_file_3_fetch.files
+      }}"
 
 - name: Create Backup File Directory (Execution Engine)
   ansible.builtin.file:
@@ -33,5 +38,9 @@
     src: "{{ item.path }}"
     dest: "{{ backup_path }}/"
     flat: true  # Prevent directory structure creation
-  with_items: "{{ file_fetch.files + file_2_fetch.files + file_3_fetch.files }}"
+  with_items: "{{
+    copy_files_to_execution_engine_file_fetch.files +
+    copy_files_to_execution_engine_file_2_fetch.files +
+    copy_files_to_execution_engine_file_3_fetch.files
+    }}"
   delegate_to: backup-host  # Fetching from remote to local system

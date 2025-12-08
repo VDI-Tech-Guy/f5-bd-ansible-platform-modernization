@@ -2,7 +2,7 @@
 
 - name: Start F5 Tenant
   f5networks.f5os.f5os_tenant:
-    name: '{{ inventory.devices[0].hostname.split(".")[0] }}'
+    name: '{{ create_f5_os_tenant_inventory.devices[0].hostname.split(".")[0] }}'
     nodes: "{{ tenant_nodes }}"
     running_state: deployed
 
@@ -13,8 +13,8 @@
     return_content: true
     status_code: 200
     validate_certs: false
-  register: atc_do_status
-  until: atc_do_status is success
+  register: start_f5_os_tenant_atc_do_status
+  until: start_f5_os_tenant_atc_do_status is success
   retries: 30
   delay: 30
   delegate_to: localhost

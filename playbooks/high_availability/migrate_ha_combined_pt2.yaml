@@ -50,3 +50,4 @@
   roles:
     - pause_5_minutes
     - restore_ucs_wait_ha
+    - sync_state

@@ -2,7 +2,7 @@
 
 - name: Import Information From JSON File
   ansible.builtin.set_fact:
-    inventory: "{{ lookup('file', item) | from_json }}"
+    create_f5_os_tenant_inventory: "{{ lookup('file', item) | from_json }}"
   with_fileglob: "{{ backup_path }}/inventory_*.json"
   delegate_to: localhost
 
@@ -11,47 +11,47 @@
     gather_subset:
       - tenant-images
       - vlans
-  register: tenant_info
+  register: create_f5_os_tenant_tenant_info
 
 # This is hard coded VL<TAG> number
 - name: Create VLANs From Old Confiruation - Named VL<TAG>
   f5networks.f5os.f5os_vlan:
     name: "vl{{ item.tag }}"
     vlan_id: "{{ item.tag }}"
-  with_items: "{{ inventory.vlans }}"
+  with_items: "{{ create_f5_os_tenant_inventory.vlans }}"
   when: '"yes" in item.interfaces[0].tagged'
 
 - name: Create VLANs List
   ansible.builtin.set_fact:
-    vlan_list: "{{ vlan_list + [item.tag] }}"
-  with_items: "{{ inventory.vlans }}"
+    create_f5_os_tenant_vlan_list: "{{ (create_f5_os_tenant_vlan_list | default([])) + [item.tag] }}"
+  with_items: "{{ create_f5_os_tenant_inventory.vlans }}"
   when: '"yes" in item.interfaces[0].tagged'
 
 - name: Debug Output
   ansible.builtin.debug:
-    var: vlan_list
+    var: create_f5_os_tenant_vlan_list
 
 - name: Debug Output
   ansible.builtin.debug:
-    var: tenant_info.tenant_images
+    var: create_f5_os_tenant_tenant_info.tenant_images
 
 - name: Find Tenant OS Image
   ansible.builtin.set_fact:
-    f5_tenant_image: "{{ item }}"
-  loop: "{{ tenant_info.tenant_images }}"
+    create_f5_os_tenant_f5_tenant_image: "{{ item }}"
+  loop: "{{ create_f5_os_tenant_tenant_info.tenant_images }}"
   when:
     - build_number is defined
     - build_number in item.name
 
 - name: Create F5 Tenant
   f5networks.f5os.f5os_tenant:
-    name: '{{ inventory.devices[0].hostname.split(".")[0] }}'
-    image_name: "{{ f5_tenant_image.name }}"
+    name: '{{ create_f5_os_tenant_inventory.devices[0].hostname.split(".")[0] }}'
+    image_name: "{{ create_f5_os_tenant_f5_tenant_image.name }}"
     nodes: "{{ tenant_nodes }}"
     mgmt_ip: "{{ mgmt_ip }}"
     mgmt_prefix: "{{ mgmt_sn_cidr }}"
     mgmt_gateway: "{{ mgmt_gw }}"
-    vlans: "{{ vlan_list }}"
+    vlans: "{{ create_f5_os_tenant_vlan_list }}"
     cpu_cores: "{{ cpu_cores }}"
     memory: "{{ memory }}"
     cryptos: "{{ cryptos }}"
@@ -63,7 +63,7 @@
   ansible.builtin.uri:
     url: >
       https://{{ ansible_host }}:8888/restconf/data/f5-tenants:tenants/tenant={{
-      inventory.devices[0].hostname.split(".")[0] }}/config/f5-tenant-mgmt-vlan:mgmt-vlan
+      create_f5_os_tenant_inventory.devices[0].hostname.split(".")[0] }}/config/f5-tenant-mgmt-vlan:mgmt-vlan
     method: PUT
     status_code:
       - 200

@@ -1,4 +1,6 @@
-## Last Updated 11/01/2025
+---
+# galaxy.yml for f5networks.f5_platform_modernization
+# Last Updated 12/09/2025
 namespace: f5networks
 name: f5_platform_modernization
 version: 1.0.0
@@ -20,10 +22,13 @@ dependencies:
   ansible.posix: '*'
   ansible.netcommon: '*'
   community.general: '*'
-repository: https://github.com/f5devcentral/f5-bd-platform-modernization
-documentation: https://github.com/f5devcentral/f5-bd-platform-modernization
-homepage: https://github.com/f5devcentral/f5-bd-platform-modernization
-issues: https://github.com/f5devcentral/f5-bd-platform-modernization/issues
+repository: https://github.com/f5devcentral/f5-bd-ansible-platform-modernization
+documentation: https://github.com/f5devcentral/f5-bd-ansible-platform-modernization/blob/main/README.md
+homepage: https://github.com/f5devcentral/f5-bd-ansible-platform-modernization
+issues: https://github.com/f5devcentral/f5-bd-ansible-platform-modernization/issues
 build_ignore:
   - ".venv"
   - "venv"
+  - ".vscode"
+  - ".ansible"
+  - ".github"
